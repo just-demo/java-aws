@@ -1,12 +1,15 @@
 package demo;
 
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.internal.presigner.DefaultS3Presigner;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.Date;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -18,8 +21,14 @@ public class S3Utils {
             .build();
 
     public static void main(String[] args) {
+        String timestamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date());
+        String bucket = "java-generated-bucket-" + timestamp;
+        String key = "java-generated-key-" + timestamp;
+        String content = "java-generated-content-" + timestamp;
+        createBucket(bucket);
+        createObject(bucket, key, content);
         System.out.println(listBuckets());
-        // System.out.println(generatePresignedUrl("bucket-name", "file-name"));
+        System.out.println(generatePresignedUrl(bucket, key));
         // deleteBuckets();
     }
 
@@ -27,6 +36,10 @@ public class S3Utils {
     // https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/examples-s3-presign.html
     public static String generatePresignedUrl(String bucket, String key) {
         S3Presigner presigner = DefaultS3Presigner.builder()
+                // Default region (from aws configure) is used, if the target bucket in a different
+                // region then the generated URL will return an error about region mismatch.
+                // Moreover, it would even generate URL for non-existent bucket name and object key.
+                // .region(US_EAST_1)
                 .build();
         GetObjectRequest objectRequest = GetObjectRequest.builder()
                 .bucket(bucket)
@@ -57,6 +70,32 @@ public class S3Utils {
                 System.err.println("Error deleting bucket [" + bucket + "]: " + e.getMessage());
             }
         });
+    }
+
+    public static void createBucket(String bucket) {
+        System.out.println("Creating bucket [" + bucket + "]...");
+        try {
+            CreateBucketRequest request = CreateBucketRequest.builder()
+                    .bucket(bucket)
+                    .build();
+            // This will be created in default region (aws configure) is not specified in client
+            CLIENT.createBucket(request);
+        } catch (Exception e) {
+            System.err.println("Error creating bucket [" + bucket + "]: " + e.getMessage());
+        }
+    }
+
+    public static void createObject(String bucket, String key, String content) {
+        System.out.println("Creating object [" + bucket + ": " + key + "]...");
+        try {
+            PutObjectRequest objectRequest = PutObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(key)
+                    .build();
+            CLIENT.putObject(objectRequest, RequestBody.fromString(content));
+        } catch (Exception e) {
+            System.err.println("Error creating object [" + bucket + ": " + key + "]: " + e.getMessage());
+        }
     }
 
     private static void deleteBucket(String bucket) {
