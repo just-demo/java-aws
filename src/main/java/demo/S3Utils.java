@@ -1,8 +1,12 @@
-package self.ed.aws;
+package demo;
 
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.internal.presigner.DefaultS3Presigner;
 import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
+import java.time.Duration;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -14,8 +18,27 @@ public class S3Utils {
             .build();
 
     public static void main(String[] args) {
-         System.out.println(listBuckets().size());
-         deleteBuckets();
+        System.out.println(listBuckets());
+        // System.out.println(generatePresignedUrl("bucket-name", "file-name"));
+        // deleteBuckets();
+    }
+
+    // https://docs.aws.amazon.com/AmazonS3/latest/dev-retired/ShareObjectPreSignedURLJavaSDK.html
+    // https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/examples-s3-presign.html
+    public static String generatePresignedUrl(String bucket, String key) {
+        S3Presigner presigner = DefaultS3Presigner.builder()
+                .build();
+        GetObjectRequest objectRequest = GetObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build();
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(1))
+                .getObjectRequest(objectRequest)
+                .build();
+        return presigner
+                .presignGetObject(presignRequest)
+                .url().toString();
     }
 
     public static List<String> listBuckets() {
@@ -57,7 +80,7 @@ public class S3Utils {
                     .continuationToken(listResponse.nextContinuationToken())
                     .build();
 
-        } while(listResponse.isTruncated());
+        } while (listResponse.isTruncated());
     }
 
     private static void deleteVersions(String bucket) {
