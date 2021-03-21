@@ -15,3 +15,13 @@ dependencies {
     // compile 'software.amazon.awssdk:aws-sdk-java:2.16.23'
     compile 'software.amazon.awssdk:s3:2.16.23'
 }
+
+jar {
+    manifest {
+        attributes('Main-Class': 'demo.S3Utils')
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}

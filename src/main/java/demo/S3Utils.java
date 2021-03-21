@@ -86,7 +86,7 @@ public class S3Utils {
     }
 
     public static void createObject(String bucket, String key, String content) {
-        System.out.println("Creating object [" + bucket + ": " + key + "]...");
+        System.out.println("Creating object [" + bucket + "/" + key + "]...");
         try {
             PutObjectRequest objectRequest = PutObjectRequest.builder()
                     .bucket(bucket)
@@ -94,7 +94,7 @@ public class S3Utils {
                     .build();
             CLIENT.putObject(objectRequest, RequestBody.fromString(content));
         } catch (Exception e) {
-            System.err.println("Error creating object [" + bucket + ": " + key + "]: " + e.getMessage());
+            System.err.println("Error creating object [" + bucket + "/" + key + "]: " + e.getMessage());
         }
     }
 
