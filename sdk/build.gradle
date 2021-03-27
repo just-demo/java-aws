@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+group 'demo'
+version '1.0-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation platform('software.amazon.awssdk:bom:2.16.24')
+    // this includes everything, but makes uber jar too big
+    // implementation 'software.amazon.awssdk:aws-sdk-java'
+    implementation 'software.amazon.awssdk:s3'
+    implementation 'software.amazon.awssdk:rds'
+}
+
+jar {
+    manifest {
+        attributes('Main-Class': 'demo.S3Utils')
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}

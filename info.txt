@@ -1,0 +1,20 @@
+For local deployment:
+1. Create IAM "user-demo" user with Programmatic access and "AmazonS3FullAccess" and "AmazonRDSFullAccess" policies attached
+2. aws configure
+3. Enter "user-demo" aws_access_key_id and aws_secret_access_key
+
+For aws deployment:
+4. Create IAM "EC2-role-demo" role with "AmazonS3FullAccess" policy attached
+5. Create "EC2-demo" security group that allows 8080 traffic from My IP
+6. Create EC2 instance with "EC2-role-demo" IAM role and "EC2-demo" security group
+7. Create "RDS-demo" security group that allows 5432 traffic from "EC2-demo" security group
+8. Create RDS Postgres database with "postgres" database and "RDS-demo" security group
+9. Create "s3-demo" bucket
+
+Deploy web:
+10. gradlew web:bootJar
+11. Upload web/build/libs/web-0.0.1-SNAPSHOT.jar to "s3-demo" bucket
+12. ssh to "EC2-demo"
+13. aws s3 cp s3://s3-demo/web-0.0.1-SNAPSHOT.jar web.jar
+14. java -Dspring.datasource.url=jdbc:postgresql://<RDS-demo-endpoint>:5432/postgres -jar web.jar
+15. Go to http://<EC2-demo-public-ip>:8080 -> / -> /buckets -> /visits
