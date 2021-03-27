@@ -1,7 +1,10 @@
 For local deployment:
-1. Create IAM "user-demo" user with Programmatic access and "AmazonS3FullAccess" and "AmazonRDSFullAccess" policies attached
+1. Create IAM "user-demo" user with Programmatic access and policies attached:
+   "AmazonS3FullAccess"
+   "AmazonRDSFullAccess"
+   "AmazonSQSFullAccess" // required to lookup queue url by name only?
 2. aws configure
-3. Enter "user-demo" aws_access_key_id and aws_secret_access_key
+3. Enter aws_access_key_id and aws_secret_access_key generated for "user-demo"
 
 For aws deployment:
 4. Create IAM "EC2-role-demo" role with "AmazonS3FullAccess" policy attached

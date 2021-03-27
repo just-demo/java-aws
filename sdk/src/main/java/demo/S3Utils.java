@@ -21,7 +21,7 @@ public class S3Utils {
             .build();
 
     public static void main(String[] args) {
-        String timestamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date());
+        String timestamp = timestamp();
         String bucket = "java-generated-bucket-" + timestamp;
         String key = "java-generated-key-" + timestamp;
         String content = "java-generated-content-" + timestamp;
@@ -145,5 +145,9 @@ public class S3Utils {
                     .versionId(object.versionId())
                     .build());
         });
+    }
+
+    private static String timestamp() {
+        return new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date());
     }
 }
