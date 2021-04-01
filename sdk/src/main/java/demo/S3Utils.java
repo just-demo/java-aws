@@ -13,11 +13,13 @@ import java.util.Date;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static software.amazon.awssdk.regions.Region.US_EAST_1;
 
 public class S3Utils {
     private static final S3Client CLIENT = S3Client.builder()
             // TODO: it does not work for other regions than default, make it cross region https://stackoverflow.com/questions/46769493/how-enable-force-global-bucket-access-in-aws-s3-sdk-java-2-0
             //.region(AWS_GLOBAL)
+            .region(US_EAST_1)
             .build();
 
     public static void main(String[] args) {
@@ -29,7 +31,7 @@ public class S3Utils {
         createObject(bucket, key, content);
         System.out.println(listBuckets());
         System.out.println(generatePresignedUrl(bucket, key));
-        // deleteBuckets();
+        deleteBuckets();
     }
 
     // https://docs.aws.amazon.com/AmazonS3/latest/dev-retired/ShareObjectPreSignedURLJavaSDK.html

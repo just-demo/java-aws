@@ -7,9 +7,11 @@ import software.amazon.awssdk.services.rds.model.DescribeDbInstancesResponse;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static software.amazon.awssdk.regions.Region.US_EAST_1;
+
 public class RdsUtils {
     private static final RdsClient CLIENT = RdsClient.builder()
-            // .region(region)
+            .region(US_EAST_1)
             .build();
 
     public static void main(String[] args) {
